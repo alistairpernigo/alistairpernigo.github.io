@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alistair Pernigo</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Syne+Mono&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --black: #06080a;
+      --white: #f2ede4;
+      --off: #c8c3b8;
+      --accent: #e8dfc8;
+      --rule: rgba(242,237,228,0.12);
+      --rule2: rgba(242,237,228,0.22);
+      --r: 20px;
+      --mono: 'Syne Mono', monospace;
+      --serif: 'Playfair Display', Georgia, serif;
+      --body: 'Lora', Georgia, serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--body);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    #cur {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      background: var(--white);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width .25s, height .25s;
+      mix-blend-mode: difference;
+    }
+
+    #cur-ring {
+      position: fixed;
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(242,237,228,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width .3s, height .3s, opacity .3s;
+    }
+
+    body:not(:hover) #cur,
+    body:not(:hover) #cur-ring { opacity: 0; }
+
+    #global-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    #global-bg img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(110vw, 110vh);
+      height: min(110vw, 110vh);
+      object-fit: cover;
+      opacity: 0.07;
+      mix-blend-mode: screen;
+      filter: saturate(0.6) blur(2px);
+    }
+
+    .site { position: relative; z-index: 2; }
+    .wrap { width: min(1060px, calc(100% - 120px)); margin: 0 auto; }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      padding: 0 calc((100% - min(1060px, calc(100% - 120px))) / 2);
+      border-bottom: 1px solid var(--rule);
+      background: rgba(6,8,10,0.6);
+      backdrop-filter: blur(18px);
+    }
+
+    .nav-inner {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--off);
+    }
+
+    .nav-logo strong { color: var(--white); }
+
+    .nav-links {
+      display: flex;
+      gap: 2.2rem;
+      list-style: none;
+    }
+
+    .nav-links button,
+    .nav-links a {
+      background: none;
+      border: none;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--off);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color .2s;
+      padding: 0;
+    }
+
+    .nav-links button:hover,
+    .nav-links a:hover { color: var(--white); }
+
+    #hero {
+      min-height: 100vh;
+      padding-top: 54px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0.18;
+      mix-blend-mode: screen;
+      filter: saturate(0.5) contrast(1.1);
+    }
+
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(6,8,10,0.12) 0%,
+        rgba(6,8,10,0.02) 42%,
+        rgba(6,8,10,0.86) 100%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      min-height: calc(100vh - 54px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 0;
+    }
+
+    .hero-center {
+      width: 100%;
+      max-width: 980px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .hero-kicker {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--off);
+      margin-bottom: 1.6rem;
+      opacity: 0;
+      animation: up .7s ease forwards .4s;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(4.5rem, 10vw, 9.5rem);
+      font-weight: 400;
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      color: var(--white);
+      text-align: center;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: up .9s ease forwards .55s;
+    }
+
+    h1 em {
+      font-style: italic;
+      display: block;
+    }
+
+    .hero-sub {
+      max-width: 52ch;
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: var(--off);
+      text-align: center;
+      margin: 0 auto 3rem;
+      opacity: 0;
+      animation: up .7s ease forwards .75s;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+      animation: up .7s ease forwards .9s;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      height: 44px;
+      padding: 0 20px;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .25s ease;
+      text-decoration: none;
+      border: 1px solid var(--rule2);
+      background: rgba(242,237,228,0.06);
+      color: var(--white);
+    }
+
+    .btn:hover {
+      background: rgba(242,237,228,0.14);
+      border-color: rgba(242,237,228,0.4);
+    }
+
+    .btn.primary {
+      background: var(--white);
+      color: var(--black);
+      border-color: var(--white);
+    }
+
+    .btn.primary:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .section-shell {
+      border: 1px solid var(--rule);
+      border-radius: var(--r);
+      padding: 64px 56px;
+      background: rgba(10,12,15,0.6);
+      backdrop-filter: blur(16px);
+    }
+
+    #field-notes,
+    #contact {
+      padding: 0 0 80px;
+      position: relative;
+    }
+
+    .section-kicker {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--off);
+      margin-bottom: 1.2rem;
+    }
+
+    h2 {
+      font-family: var(--serif);
+      font-size: clamp(2.6rem, 5vw, 4.5rem);
+      font-weight: 400;
+      line-height: 0.96;
+      letter-spacing: -0.03em;
+      color: var(--white);
+      margin-bottom: 1.5rem;
+    }
+
+    h2 em { font-style: italic; }
+
+    .section-desc {
+      font-size: 0.94rem;
+      line-height: 1.9;
+      color: var(--off);
+      margin-bottom: 2rem;
+      max-width: 62ch;
+    }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 2rem;
+    }
+
+    .post-card {
+      border: 1px solid var(--rule);
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(242,237,228,0.03);
+      transition: background .22s, transform .22s;
+    }
+
+    .post-card:hover {
+      background: rgba(242,237,228,0.06);
+      transform: translateY(-2px);
+    }
+
+    .post-media img,
+    .post-media video {
+      width: 100%;
+      display: block;
+      object-fit: cover;
+      aspect-ratio: 4 / 3;
+      background: #000;
+    }
+
+    .post-meta {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--off);
+      padding: 18px 18px 8px;
+    }
+
+    .post-title {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--white);
+      padding: 0 18px 10px;
+    }
+
+    .post-desc {
+      color: var(--off);
+      line-height: 1.8;
+      padding: 0 18px 20px;
+      font-size: 0.92rem;
+    }
+
+    .contact-shell {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    .contact-desc {
+      font-size: 0.94rem;
+      line-height: 1.9;
+      color: var(--off);
+      margin-bottom: 2rem;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+    }
+
+    .contact-link-row {
+      display: flex;
+      align-items: center;
+      height: 50px;
+      padding: 0 18px;
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      background: rgba(242,237,228,0.03);
+      text-decoration: none;
+      color: var(--white);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      gap: 1rem;
+      transition: all .22s;
+    }
+
+    .contact-link-row:hover {
+      background: rgba(242,237,228,0.07);
+      border-color: var(--rule2);
+    }
+
+    .contact-link-label {
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      color: var(--off);
+      margin-right: auto;
+    }
+
+    .contact-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field-label {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--off);
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      background: rgba(242,237,228,0.04);
+      color: var(--white);
+      padding: 13px 15px;
+      font-family: var(--body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder {
+      color: rgba(242,237,228,0.25);
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: var(--rule2);
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 140px;
+    }
+
+    .form-submit {
+      height: 48px;
+      border: 1px solid var(--white);
+      border-radius: 10px;
+      background: var(--white);
+      color: var(--black);
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .22s;
+    }
+
+    .form-submit:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 22px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-inner span,
+    .footer-inner a {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--off);
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    .footer-inner a:hover { color: var(--white); }
+
+    .panel {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: none;
+      overflow-y: auto;
+      padding: 28px 0 48px;
+      background: rgba(6,8,10,0.92);
+    }
+
+    .panel.open { display: block; }
+
+    .panel-media {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    #storyPanel .panel-media img,
+    #visionPanel .panel-media video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.07;
+      mix-blend-mode: screen;
+      filter: saturate(0.4) blur(3px);
+    }
+
+    .panel-shell {
+      position: relative;
+      z-index: 2;
+      width: min(820px, calc(100% - 80px));
+      margin: 0 auto;
+      border: 1px solid var(--rule2);
+      border-radius: var(--r);
+      background: rgba(10,12,15,0.7);
+      backdrop-filter: blur(24px);
+      overflow: hidden;
+      animation: panelIn .4s cubic-bezier(.4,0,.2,1) both;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 36px 44px 28px;
+      border-bottom: 1px solid var(--rule);
+      gap: 24px;
+    }
+
+    .panel-kicker {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--off);
+      margin-bottom: 10px;
+    }
+
+    .panel-title {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--white);
+    }
+
+    .panel-title em { font-style: italic; }
+
+    .close-btn {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--rule2);
+      border-radius: 50%;
+      background: rgba(242,237,228,0.06);
+      color: var(--off);
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+    }
+
+    .close-btn:hover {
+      background: rgba(242,237,228,0.14);
+      color: var(--white);
+    }
+
+    .panel-body {
+      padding: 40px 44px 52px;
+    }
+
+    .panel-text {
+      max-width: 66ch;
+      font-size: 0.97rem;
+      line-height: 2.05;
+      color: var(--off);
+    }
+
+    .panel-text p + p { margin-top: 1.3rem; }
+    .panel-text strong { color: var(--white); font-weight: 500; }
+
+    blockquote {
+      margin: 2rem 0;
+      padding: 1.1rem 1.6rem;
+      border-left: 1px solid var(--rule2);
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.2rem;
+      line-height: 1.65;
+      color: var(--white);
+    }
+
+    .pub-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .pub-card {
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      padding: 24px;
+      background: rgba(242,237,228,0.02);
+      transition: background .25s;
+    }
+
+    .pub-card:hover { background: rgba(242,237,228,0.04); }
+
+    .pub-label {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--off);
+      margin-bottom: 10px;
+    }
+
+    .pub-title {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      line-height: 1.4;
+      color: var(--white);
+      margin-bottom: 12px;
+    }
+
+    .pub-desc {
+      font-size: 0.88rem;
+      line-height: 1.9;
+      color: var(--off);
+      margin-bottom: 16px;
+    }
+
+    .pub-links {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+
+    .pub-links a {
+      display: inline-flex;
+      align-items: center;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--rule2);
+      background: transparent;
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--off);
+      text-decoration: none;
+      transition: all .2s;
+    }
+
+    .pub-links a:hover {
+      background: rgba(242,237,228,0.08);
+      color: var(--white);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity .9s ease, transform .9s ease;
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes up {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @media (max-width: 860px) {
+      .wrap { width: min(100%, calc(100% - 48px)); }
+      h1 { font-size: clamp(3.5rem, 12vw, 6rem); }
+      .contact-shell,
+      .posts-grid {
+        grid-template-columns: 1fr;
+      }
+      .section-shell {
+        padding: 32px 28px;
+      }
+      .panel-header { padding: 24px 24px 20px; }
+      .panel-body { padding: 28px 24px 40px; }
+      .nav-links { gap: 1.2rem; }
+      nav { padding: 0 24px; }
+    }
+
+    @media (max-width: 560px) {
+      body { cursor: auto; }
+      #cur, #cur-ring { display: none; }
+      .wrap { width: calc(100% - 32px); }
+      .nav-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 0;
+      }
+      nav {
+        height: auto;
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+      #hero { padding-top: 90px; }
+      .hero-actions {
+        flex-direction: column;
+        width: 100%;
+      }
+      .hero-actions .btn {
+        justify-content: center;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="global-bg">
+    <img src="./assets/bg-main.gif" alt="" />
+  </div>
+
+  <div id="cur"></div>
+  <div id="cur-ring"></div>
+
+  <div class="site">
+    <nav>
+      <div class="nav-inner">
+        <div class="nav-logo"><strong>Alistair Pernigo</strong> — Personal</div>
+        <ul class="nav-links">
+          <li><button data-open="storyPanel" type="button">My Story</button></li>
+          <li><button data-open="visionPanel" type="button">Future Vision</button></li>
+          <li><button data-open="pubsPanel" type="button">Publications</button></li>
+          <li><a href="#field-notes">Field Notes</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <section id="hero">
+      <div class="hero-bg">
+        <img src="./assets/bg-radial.gif" alt="" />
+      </div>
+
+      <div class="hero-content wrap">
+        <div class="hero-center">
+          <p class="hero-kicker">MIT Affiliate · Researcher · Builder · 2002</p>
+
+          <h1>Alistair<br><em>Pernigo</em></h1>
+
+          <p class="hero-sub">
+            Building the tools that make the invisible chemistry of reality
+            measurable, readable, and eventually reproducible.
+          </p>
+
+          <div class="hero-actions">
+            <button class="btn primary" data-open="storyPanel" type="button">My Story</button>
+            <button class="btn" data-open="visionPanel" type="button">Future Vision</button>
+            <button class="btn" data-open="pubsPanel" type="button">Publications</button>
+            <a class="btn" href="#field-notes">Field Notes</a>
+            <a class="btn" href="#contact">Contact</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="field-notes">
+      <div class="wrap">
+        <div class="section-shell reveal">
+          <div class="section-kicker">04 / Field Notes</div>
+          <h2>Images, signals,<br><em>fragments.</em></h2>
+          <p class="section-desc">
+            A space for visual notes, moving studies, laboratory fragments, travel images, prototype moments, and atmospheric records from the work in progress.
+          </p>
+
+          <div class="posts-grid">
+            <article class="post-card">
+              <div class="post-media">
+                <img src="./assets/note-01.jpg" alt="Field note image" />
+              </div>
+              <div class="post-meta">Issue 01 · 2026</div>
+              <h3 class="post-title">Chemical landscapes</h3>
+              <p class="post-desc">
+                A visual fragment from the ongoing research around perception, biological signal, and multisensory interfaces.
+              </p>
+            </article>
+
+            <article class="post-card">
+              <div class="post-media">
+                <video autoplay muted loop playsinline>
+                  <source src="./assets/bg-video.mp4" type="video/mp4" />
+                </video>
+              </div>
+              <div class="post-meta">Issue 02 · 2026</div>
+              <h3 class="post-title">Motion study</h3>
+              <p class="post-desc">
+                A moving note on atmosphere, interference, field behavior, and invisible structure.
+              </p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="wrap">
+        <div class="section-shell reveal">
+          <div class="contact-shell">
+            <div class="contact-left">
+              <div class="section-kicker">05 / Contact</div>
+              <h2>Let’s<br><em>connect.</em></h2>
+              <p class="contact-desc">
+                Reach out for research, collaborations, speaking, company building, or frontier technology conversations.
+              </p>
+
+              <div class="contact-links">
+                <a class="contact-link-row" href="https://www.linkedin.com/in/alistairpernigo" target="_blank" rel="noreferrer">
+                  <span class="contact-link-label">LinkedIn</span>
+                  /in/alistairpernigo ↗
+                </a>
+
+                <a class="contact-link-row" href="mailto:hello@alistairpernigo.com">
+                  <span class="contact-link-label">Email</span>
+                  hello@alistairpernigo.com
+                </a>
+
+                <div class="contact-link-row" style="cursor:default;">
+                  <span class="contact-link-label">Location</span>
+                  San Francisco, CA / Europe
+                </div>
+              </div>
+            </div>
+
+            <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+              <div class="field">
+                <label class="field-label" for="name">Name</label>
+                <input id="name" name="name" type="text" placeholder="Your name" required />
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="email">Email</label>
+                <input id="email" name="email" type="email" placeholder="you@example.com" required />
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="message">Message</label>
+                <textarea id="message" name="message" rows="5" placeholder="Write your message…" required></textarea>
+              </div>
+
+              <button type="submit" class="form-submit">Send Message</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <div class="footer-inner">
+          <span>© 2026 Alistair Pernigo</span>
+          <span>Olfaction · Multisensory AI · MIT</span>
+          <a href="https://www.linkedin.com/in/alistairpernigo" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <div class="panel" id="storyPanel">
+    <div class="panel-media">
+      <img src="./assets/bg-ufo.gif" alt="" />
+    </div>
+    <div class="panel-shell">
+      <div class="panel-header">
+        <div>
+          <div class="panel-kicker">01 / My Story</div>
+          <h2 class="panel-title">A story of<br><em>perception.</em></h2>
+        </div>
+        <button class="close-btn" data-close type="button">✕</button>
+      </div>
+      <div class="panel-body">
+        <div class="panel-text">
+          <p>I'm Alistair. I arrived on this Earth in the spring of 2002, and ever since I was a child I have been deeply sensitive to perception — especially to smell, but also to color, sound, texture, and the subtle ways reality impresses itself onto the senses.</p>
+          <p>I grew up experiencing the world with unusual intensity. Episodes of synesthesia, strong sensory sensitivity, and a constant fascination with invisible signals shaped the way I learned to observe. For me, <strong>perception was never a passive act</strong>. It was always a field of inquiry — something to examine, decode, and eventually rebuild. I never felt separate from these patterns, nor from the universe they emerged from. I felt inside them.</p>
+          <blockquote>Smell, to me, has always represented a domain of experience that language cannot fully contain.</blockquote>
+          <p>My formation did not happen along one straight institutional path. It happened across nature, animals, painting, chemistry, physics, philosophy, and technology. I was always less interested in memorizing information than in <strong>understanding how the layers of reality connect</strong>: how biology becomes sensation, how matter becomes signal, how experience becomes meaning, and how tools can extend the limits of what we are able to perceive.</p>
+          <p>Travel also played a decisive role. Moving across countries, cultures, and disciplines exposed me to different ways of living and thinking. It taught me that intelligence is not uniform, talent is not standardized, and that <strong>the most interesting futures are often built by people who refuse to fit cleanly into pre-existing categories</strong>.</p>
+          <p>Very early on, I realized that traditional education was not designed for the way my mind worked. What at first looked like laziness was, in truth, resistance — a defense against systems that compressed curiosity instead of expanding it. In 2020, during the pandemic, as soon as I was legally able to do so, I formally withdrew from school. That decision was not an escape. It was the beginning of a necessary process: <strong>removing inherited mental patterns, recovering autonomy</strong>, and rebuilding my trajectory on my own terms.</p>
+          <p>Between 2021 and 2022 I spent several months at <strong>H-Farm near Venice</strong>, learning programming languages, prototyping hardware, and engaging with founders across entertainment, healthcare, food, wine, fashion, and technology. Then came consulting, conferences, and speaking engagements across Europe, the Middle East, Japan, and the United States.</p>
+          <p>A major acceleration came when I began <strong>collaborating with Paul Pu Liang at MIT Media Lab and MIT EECS</strong>, where he leads the Multisensory Intelligence group. That collaboration expanded into work on devices and multimodal AI systems for capturing, analyzing, and recognizing smells — and led to public research output including <strong>SMELLNET</strong>, a large-scale dataset for real-world smell recognition.</p>
+          <p>Today, my role is fundamentally <strong>translational and execution-oriented</strong>. I define strategic direction, convert technical complexity into development architecture, align hardware, AI, and software priorities, build strong teams, and transform frontier research into real services and experiences. I focus on leverage: the few decisions that truly change outcomes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="visionPanel">
+    <div class="panel-media">
+      <video autoplay loop muted playsinline src="./assets/bg-video.mp4"></video>
+    </div>
+    <div class="panel-shell">
+      <div class="panel-header">
+        <div>
+          <div class="panel-kicker">02 / Future Vision</div>
+          <h2 class="panel-title">Dealing with<br><em>futures.</em></h2>
+        </div>
+        <button class="close-btn" data-close type="button">✕</button>
+      </div>
+      <div class="panel-body">
+        <div class="panel-text">
+          <p>I am not interested in predicting the future as if it were weather. What matters more to me is deciding what kind of future is worth building — and what role I want to play in bringing it into existence.</p>
+          <p>Over the last few decades, humanity has made extraordinary progress in the world of bits. We built the internet, smartphones, social media, machine learning systems, and now generative AI. But in the world of atoms — in physical reality, outside the screen — progress has felt comparatively narrow. We became excellent at information, but less ambitious about matter, energy, perception, and civilization-scale systems.</p>
+          <blockquote>A civilization cannot live indefinitely inside abstractions. It needs tools that reconnect intelligence to the physical world.</blockquote>
+          <p>In the near future, most forms of work that are fully legible to a computer will be automated. At that point, the central bottlenecks become compute, energy, chips, and physical deployment. <strong>Intelligence stops being only a software question and becomes an infrastructure question.</strong></p>
+          <p>But digital intelligence alone is not enough. To truly operate in the real world, machines need richer perception. Today, most artificial systems can already process language, images, and sound at extraordinary levels. Yet the world is not made only of text, pixels, and audio. It is also made of <strong>chemicals, volatile compounds, biological traces, gradients, contamination, fermentation, decay, health signals, and atmospheric changes</strong>. The future of intelligence has to become multisensory.</p>
+          <p>This is one reason I care so deeply about smell. <strong>Smell is not a decorative sense. It is an information channel.</strong> It gives early warning before many events become visible. It detects what cameras cannot see and what language cannot describe well. It often reveals the hidden state of a system before other modalities do.</p>
+          <p>That opens a huge design space. In homes and cities, chemical sensing could become part of ambient intelligence. In <strong>healthcare</strong>, noninvasive olfactory sensing could support prevention, monitoring, and diagnosis. In <strong>agriculture</strong>, early detection of plant stress and quality deviations. In <strong>robotics</strong>, a missing dimension of perception for navigating dangerous environments.</p>
+          <p>My vision is that the future will be defined less by isolated software products and more by <strong>interfaces that dissolve the boundary between body, computation, and environment</strong>. The best interfaces will not feel like gadgets — they will become more intuitive, more embodied, more ambient, and in some cases more neural.</p>
+          <p>That future will not arrive automatically. It will happen only if people decide to build it. <strong>That is the future I want to help create.</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="pubsPanel">
+    <div class="panel-shell">
+      <div class="panel-header">
+        <div>
+          <div class="panel-kicker">03 / Publications</div>
+          <h2 class="panel-title">Selected<br><em>research.</em></h2>
+        </div>
+        <button class="close-btn" data-close type="button">✕</button>
+      </div>
+      <div class="panel-body">
+        <div class="pub-grid">
+          <div class="pub-card">
+            <div class="pub-label">ICLR 2026 · arXiv Preprint</div>
+            <div class="pub-title">SMELLNET: A Large-scale Dataset for Real-world Smell Recognition</div>
+            <div class="pub-desc">
+              A large-scale benchmark and modeling effort for real-world smell recognition, using portable gas and chemical sensors to digitize diverse odor signals and train AI systems for substance classification.
+            </div>
+            <div class="pub-links">
+              <a href="https://arxiv.org/abs/2506.00239" target="_blank" rel="noreferrer">arXiv ↗</a>
+              <a href="https://iclr.cc/virtual/2026/poster/10008694" target="_blank" rel="noreferrer">ICLR Poster ↗</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cur = document.getElementById('cur');
+    const ring = document.getElementById('cur-ring');
+    let mx = window.innerWidth / 2;
+    let my = window.innerHeight / 2;
+    let rx = mx;
+    let ry = my;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX;
+      my = e.clientY;
+      cur.style.left = mx + 'px';
+      cur.style.top = my + 'px';
+    });
+
+    function animateRing() {
+      rx += (mx - rx) * 0.13;
+      ry += (my - ry) * 0.13;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cur.style.width = '12px';
+        cur.style.height = '12px';
+        ring.style.width = '44px';
+        ring.style.height = '44px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cur.style.width = '6px';
+        cur.style.height = '6px';
+        ring.style.width = '28px';
+        ring.style.height = '28px';
+      });
+    });
+
+    const panels = document.querySelectorAll('.panel');
+
+    function openPanel(id) {
+      panels.forEach(p => p.classList.remove('open'));
+      const target = document.getElementById(id);
+      if (target) {
+        target.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeAll() {
+      panels.forEach(p => p.classList.remove('open'));
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('[data-open]').forEach(el => {
+      el.addEventListener('click', () => openPanel(el.dataset.open));
+    });
+
+    document.querySelectorAll('[data-close]').forEach(el => {
+      el.addEventListener('click', closeAll);
+    });
+
+    panels.forEach(panel => {
+      panel.addEventListener('click', e => {
+        if (e.target === panel) closeAll();
+      });
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeAll();
+    });
+
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>
